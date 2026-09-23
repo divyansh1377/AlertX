@@ -1,31 +1,54 @@
-# AlertX — Frontend & 3D Visualization (Team 1)
+# AlertX — Luxury Automotive Cockpit & Driver Safety HUD (Team 1)
 
-This module contains the browser client, real-time telemetry HUD, procedural audio alarm synthesizer, and Three.js 3D avatar rig.
+This module delivers a cinematic, luxury automotive cockpit user experience combined with real-time driver vigilance intelligence, WebGL 3D spatial visualization, and procedural Web Audio synthesizers.
 
 ---
 
-## 🎨 Three.js Custom Template Injection
+## 🏗️ Architecture & Component Directory
 
-The 3D environment is encapsulated inside [`scripts/three_visualizer.js`](scripts/three_visualizer.js).
+```
+team1-frontend/
+├── index.html               # Dual-view master template (Auth Landing + Cockpit HUD)
+├── styles/
+│   ├── main.css             # Glassmorphism, CSS Variables, Split Layouts, Responsive Grid
+│   └── components.css       # Reusable Buttons, Cards, Inputs, Status Badges, History Log
+├── js/
+│   ├── main.js              # Application orchestrator, Auth router, and Lifecycle manager
+│   ├── three_visualizer.js  # Atmospheric 3D Highway Background & 3D Face Digital Twin Rig
+│   ├── dashboard.js         # HUD Telemetry gauges, EAR/MAR/PERCLOS rendering & Event log
+│   ├── webcam_manager.js    # HTML5 Camera ingestion & 30 FPS canvas frame capture
+│   ├── websocket_client.js  # Full-duplex WebSocket client (`ws://localhost:8000/ws/telemetry`)
+│   └── audio_alert.js       # Web Audio procedural multi-tier alarm synthesizer
+└── scripts/                 # Backwards-compatible module re-exports
+```
 
-### How to Inject a Custom 3D Model / Template:
-You can mount custom GLTF/GLB models, custom shaders, or custom cockpit scenes cleanly using the `mountCustomModel` method:
+---
 
+## 🎨 Three.js Visualizer Engine (`three_visualizer.js`)
+
+The visualizer provides dual concurrent 3D systems:
+1. **Atmospheric Background Scene**: Fullscreen real-time 3D dark automotive highway with dynamic moving cybernetic grid lines, exponential horizon fog (`THREE.FogExp2`), low-poly vehicle hull silhouette, and responsive mouse/touch parallax.
+2. **3D Spatial Digital Twin Rig**: Cybernetic face mesh with glowing landmark vertex point clouds that dynamically reflect:
+   - **Head Pose Kinematics**: Pitch, Yaw, Roll Euler angles.
+   - **Biometric Morphing**: Eye aperture scaling based on EAR and mouth yawning based on MAR.
+   - **Alert State Lighting**: Real-time color transitions (`Normal` #10B981, `Advisory` #F59E0B, `Warning` #F97316, `Critical` #EF4444).
+
+### Custom 3D Model Injection:
+Mount external GLTF/GLB models or custom geometries seamlessly:
 ```javascript
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const loader = new GLTFLoader();
-loader.load('/path/to/custom_driver_head.glb', (gltf) => {
-  // Pass the root object to the visualizer
+loader.load('/assets/custom_driver_avatar.glb', (gltf) => {
   app.visualizer.mountCustomModel(gltf.scene);
 });
 ```
 
-The visualizer automatically synchronizes:
-- **Head Pose Rotation**: Pitch (X), Yaw (Y), Roll (Z) via `updateHeadPose(pitch, yaw, roll)`
-- **Eye Blink Morph**: Scales eye geometry with EAR via `updateBiometrics(ear, mar)`
-- **Mouth Yawn Morph**: Scales mouth geometry with MAR
-- **Alert Colors**: Switches material shaders to Green/Yellow/Orange/Red according to vigilance tier.
+---
+
+## 🔐 Auth Experience & Session Handling
+- **Split-Screen Landing**: Luxury glassmorphism card featuring branding, tagline, product highlights, and driver authentication form.
+- **Client-Side Validation & Mock Authentication**: Instant format checks and isolated `mockAuthenticate()` handler with password show/hide and "Remember Me" session persistence (`localStorage`).
 
 ---
 
@@ -38,5 +61,4 @@ npm run dev
 ```
 
 ### Option 2: Direct Static File Ingestion
-Open `index.html` directly in any modern browser (Chrome / Edge / Firefox) supporting WebGL and Web Audio.
-
+Open `index.html` directly in any modern WebGL and Web Audio-enabled browser (Google Chrome, Microsoft Edge, Mozilla Firefox, Safari).
