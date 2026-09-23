@@ -1,0 +1,13 @@
+# Team 3: Computer Vision & AI Modeling Dependencies
+mediapipe>=0.10.9
+opencv-python-headless>=4.8.0.76
+numpy>=1.24.3
+torch>=2.0.0
+torchvision>=0.15.0
+scipy>=1.10.1
+pyyaml>=6.0
+pydantic>=2.4.0
+websockets>=11.0.3
+requests>=2.31.0
+pytest>=7.4.0
+

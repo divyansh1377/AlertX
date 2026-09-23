@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlertX — AI Driver Drowsiness Detection System</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles/main.css">
+  
+  <!-- Three.js (CDN for direct plug-and-play browser usage) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-logo"></div>
+      <h1 class="brand-name">ALERTX</h1>
+      <span class="brand-badge">HUD v1.0</span>
+    </div>
+
+    <div class="header-controls">
+      <div class="status-pill" id="system-status-pill">
+        <span class="pulse-dot" id="system-pulse-dot"></span>
+        <span id="ws-status-text">CONNECTING...</span>
+      </div>
+
+      <div class="status-pill">
+        <span>FPS:</span>
+        <span id="fps-counter" style="color: var(--color-normal); font-weight: 700;">0</span>
+      </div>
+
+      <div class="status-pill">
+        <span>LATENCY:</span>
+        <span id="latency-counter" style="color: var(--color-normal); font-weight: 700;">-- ms</span>
+      </div>
+
+      <button class="btn btn-primary" id="btn-start-calibration">
+        ⚡ Calibrate (15s)
+      </button>
+
+      <button class="btn" id="btn-toggle-audio">
+        🔊 Audio: ON
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Dashboard Container -->
+  <main class="dashboard-container">
+
+    <!-- 1. Master Alert Status Banner -->
+    <header class="alert-banner normal" id="master-alert-banner">
+      <div>
+        <div class="metric-label">CURRENT DRIVER VIGILANCE STATUS</div>
+        <div class="alert-state-tag" id="alert-state-text">NORMAL</div>
+        <div class="alert-triggers" id="alert-triggers-text">Driver fully attentive. Baseline parameters stable.</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="metric-label">FATIGUE SEVERITY INDEX</div>
+        <div class="metric-value" id="fatigue-index-value" style="font-size: 2.8rem; color: var(--active-alert-color);">12.4</div>
+      </div>
+    </header>
+
+    <!-- 2. Left Column: Camera Feed & 3D Spatial Rig -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">📹 Optical & 3D Spatial Telemetry</span>
+        <button class="btn" id="btn-toggle-camera" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">Camera ON</button>
+      </div>
+
+      <div class="visual-viewport-grid">
+        <!-- Live Video Viewport -->
+        <div class="video-box">
+          <span class="viewport-overlay-tag">CAMERA INGEST (640x480)</span>
+          <video id="webcam-feed" autoplay playsinline muted></video>
+          <canvas id="capture-canvas" style="display: none;"></canvas>
+        </div>
+
+        <!-- Three.js 3D Face / Cockpit Mount -->
+        <div class="three-box">
+          <span class="viewport-overlay-tag">3D DIGITAL TWIN RIG</span>
+          <!-- Clean Mount Point for Custom Three.js Template -->
+          <div id="threejs-mount"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Right Column: Biometrics & Feature Metrics -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🧬 Real-Time Facial Biometrics</span>
+        <span class="status-pill" id="landmark-confidence-pill" style="font-size: 0.75rem;">CONFIDENCE: 96%</span>
+      </div>
+
+      <div class="metrics-grid">
+        <!-- EAR Metric Card -->
+        <div class="metric-card">
+          <div class="metric-label">Eye Aspect Ratio (EAR)</div>
+          <div class="metric-value-row">
+            <span class="metric-value" id="ear-value">0.312</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="ear-baseline-text">Base: 0.315</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="ear-progress" style="width: 80%;"></div>
+          </div>
+        </div>
+
+        <!-- MAR Metric Card -->
+        <div class="metric-card">
+          <div class="metric-label">Mouth Aspect Ratio (MAR)</div>
+          <div class="metric-value-row">
+            <span class="metric-value" id="mar-value">0.185</span>
+            <span id="yawn-badge" style="font-size: 0.75rem; color: var(--color-normal); font-family: var(--font-mono);">MOUTH CLOSED</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="mar-progress" style="width: 25%;"></div>
+          </div>
+        </div>
+
+        <!-- PERCLOS Card -->
+        <div class="metric-card">
+          <div class="metric-label">PERCLOS (30-Frame Window)</div>
+          <div class="metric-value-row">
+            <span class="metric-value" id="perclos-value">8.4%</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Threshold: 25%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="perclos-progress" style="width: 8%;"></div>
+          </div>
+        </div>
+
+        <!-- Head Pose Card -->
+        <div class="metric-card">
+          <div class="metric-label">3D Head Pose (P / Y / R)</div>
+          <div class="metric-value-row">
+            <span class="metric-value" id="head-pose-value" style="font-size: 1.1rem;">-2° / 1° / 0°</span>
+            <span id="head-nod-badge" style="font-size: 0.75rem; color: var(--color-normal); font-family: var(--font-mono);">STABLE</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="head-pitch-progress" style="width: 50%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Driving Context Footer -->
+      <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-glass); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">CONTEXT:</span>
+          <span id="context-road-pill" class="status-pill" style="font-size: 0.75rem; display: inline-block; margin-left: 0.5rem;">MOTORWAY (1.35x Risk)</span>
+        </div>
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">SPEED:</span>
+          <span id="context-speed-value" style="font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); margin-left: 0.5rem;">90 KM/H</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 15-Second Calibration Modal -->
+  <div class="modal-backdrop" id="calibration-modal">
+    <div class="modal-content">
+      <h2 style="color: var(--color-normal); margin-bottom: 0.5rem;">Driver Calibration</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+        Look forward naturally at the camera with your eyes open for 15 seconds to establish personal EAR/MAR baselines.
+      </p>
+
+      <div style="font-size: 3rem; font-weight: 900; font-family: var(--font-mono); color: var(--text-primary); margin-bottom: 1rem;" id="calibration-countdown">
+        15.0s
+      </div>
+
+      <div class="progress-bar-bg" style="height: 10px; margin-bottom: 1.5rem;">
+        <div class="progress-bar-fill" id="calibration-progress-bar" style="width: 0%;"></div>
+      </div>
+
+      <div style="display: flex; justify-content: space-around; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        <div>Current EAR: <span id="calib-ear-current" style="color: var(--text-primary);">--</span></div>
+        <div>Current MAR: <span id="calib-mar-current" style="color: var(--text-primary);">--</span></div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-cancel-calibration" style="width: 100%; justify-content: center;">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script type="module" src="scripts/main.js"></script>
+</body>
+</html>
+

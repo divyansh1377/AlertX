@@ -1,0 +1,55 @@
+# AlertX CV/ML Pipeline Configuration File
+
+pipeline:
+  target_fps: 30
+  max_latency_budget_ms: 40.0
+  frame_width: 640
+  frame_height: 480
+
+mediapipe:
+  max_num_faces: 1
+  refine_landmarks: true
+  min_detection_confidence: 0.5
+  min_tracking_confidence: 0.5
+
+landmarks:
+  # MediaPipe 468 Mesh Indices
+  left_eye: [33, 160, 158, 133, 153, 144]
+  right_eye: [362, 385, 387, 263, 373, 380]
+  mouth_outer: [61, 291, 0, 17, 84, 314, 78, 308]
+  mouth_inner: [78, 308, 13, 14, 82, 312, 87, 317]
+  
+  # Head Pose 3D Model Reference Points (PnP)
+  nose_tip: 1
+  chin: 199
+  left_eye_corner: 33
+  right_eye_corner: 263
+  left_mouth_corner: 61
+  right_mouth_corner: 291
+
+thresholds:
+  default_ear_threshold: 0.22
+  default_mar_threshold: 0.65
+  perclos_window_frames: 30
+  perclos_advisory_pct: 15.0
+  perclos_warning_pct: 25.0
+  perclos_critical_pct: 40.0
+  
+  head_nod_pitch_deg: -18.0       # Pitch downward indicates nodding off
+  distraction_yaw_deg: 30.0       # Yaw left/right indicates gaze away from road
+  tilt_roll_deg: 25.0             # Roll indicates extreme head listing
+
+calibration:
+  duration_seconds: 15.0
+  min_valid_samples: 300
+  ear_threshold_std_multiplier: 1.5
+  mar_threshold_std_multiplier: 2.0
+
+temporal_model:
+  window_size: 30
+  feature_dim: 16
+  num_heads: 4
+  hidden_dim: 64
+  num_layers: 2
+  dropout: 0.1
+

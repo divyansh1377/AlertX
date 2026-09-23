@@ -1,0 +1,13 @@
+# Team 2: Backend, Fusion & Routing Dependencies
+fastapi>=0.103.1
+uvicorn[standard]>=0.23.2
+pydantic>=2.4.0
+numpy>=1.24.3
+scipy>=1.10.1
+scikit-fuzzy>=0.4.2
+websockets>=11.0.3
+requests>=2.31.0
+httpx>=0.24.1
+pytest>=7.4.0
+pytest-asyncio>=0.21.1
+

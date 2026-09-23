@@ -1,0 +1,15 @@
+{
+  "name": "alertx-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AlertX Real-Time Driver Drowsiness Detection Cockpit & Three.js 3D Visualizer",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 3000 --host"
+  },
+  "devDependencies": {
+    "vite": "^4.4.9"
+  }
+}
+

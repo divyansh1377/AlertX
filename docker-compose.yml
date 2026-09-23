@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Person 2: Backend, Fusion & Routing Service
+  backend:
+    build:
+      context: ./team2-backend
+      dockerfile: Dockerfile
+    container_name: alertx-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - RELOAD=true
+      - ML_WORKER_URL=ws://ml-simulation:8001/ws/worker
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+    volumes:
+      - ./team2-backend:/app
+    networks:
+      - alertx-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Person 3: Computer Vision & AI Modeling Service
+  ml-simulation:
+    build:
+      context: ./team3-ml-simulation
+      dockerfile: Dockerfile
+    container_name: alertx-ml-simulation
+    ports:
+      - "8001:8001"
+    environment:
+      - BACKEND_WS_URL=ws://backend:8000/ws/ml-feed
+      - TARGET_FPS=30
+      - DEVICE=cpu # or cuda
+    volumes:
+      - ./team3-ml-simulation:/app
+    networks:
+      - alertx-net
+    depends_on:
+      - backend
+
+  # Person 1: Frontend & 3D Visualization Web Client
+  frontend:
+    build:
+      context: ./team1-frontend
+      dockerfile: Dockerfile
+    container_name: alertx-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_BACKEND_WS_URL=ws://localhost:8000/ws/telemetry
+      - VITE_BACKEND_API_URL=http://localhost:8000
+    volumes:
+      - ./team1-frontend:/app
+      - /app/node_modules
+    networks:
+      - alertx-net
+    depends_on:
+      - backend
+
+networks:
+  alertx-net:
+    driver: bridge
+
