@@ -2,47 +2,374 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================================
+   LOCAL PLUS JAKARTA SANS FONT INTEGRATION
+   ========================================================================= */
+
+/* Variable font (Supports weights 200 through 800) */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/PlusJakartaSans-VariableFont_wght.ttf') format('truetype-variations'),
+       url('/fonts/PlusJakartaSans-VariableFont_wght.ttf') format('truetype');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf') format('truetype-variations'),
+       url('/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 200 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Static weights as robust fallbacks */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =========================================================================
+   BASE DESIGN TOKENS & RADIUS HIERARCHY
+   ========================================================================= */
+
 @layer base {
   :root {
-    --color-bg: #090d16;
-    --color-surface: #0f172a;
-    --color-border: #1e293b;
-    --color-cyan-glow: #06b6d4;
-    --color-emerald-glow: #10b981;
+    --bg-main: #0B0B0C;
+    --bg-secondary: #141416;
+    --surface-card: #1C1C1F;
+    --surface-elevated: #252528;
+    --text-primary: #F5F5F5;
+    --text-secondary: #B5B5B8;
+    --text-muted: #858589;
+    --border-subtle: rgba(255, 255, 255, 0.12);
+    --surface-hover: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.25);
+    --outline-focus: #E5E5E5;
+
+    /* Semantic Safety Colors */
+    --color-safety-normal: #10B981;
+    --color-safety-advisory: #EAB308;
+    --color-safety-warning: #F97316;
+    --color-safety-critical: #EF4444;
+
+    /* Radius System */
+    --radius-sm: 8px;      /* Small controls, compact badges */
+    --radius-md: 12px;     /* Buttons, input fields */
+    --radius-card: 16px;   /* Metric cards */
+    --radius-panel: 20px;  /* Large panels, video viewport, sparkline containers */
+    --radius-modal: 24px;  /* Main login card, dialog modals */
+
+    /* Spacing Scale Tokens */
+    --metric-card-padding: 20px;
+    --metric-card-gap: 16px;
+    --metric-label-gap: 10px;
+    --panel-padding: 20px;
   }
 
   body {
     margin: 0;
     padding: 0;
-    background-color: #020617;
-    color: #f8fafc;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
 
-  code, pre, .font-mono {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.015em;
+  }
+
+  /* Consistent Tabular Numbers for all telemetry readings */
+  code, pre, .font-mono, .metric-number {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'tnum' on, 'zero' on, 'cv11' on;
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* Custom Scrollbars for Cockpit HUD */
+/* =========================================================================
+   REUSABLE REFINED ROUNDED COMPONENTS & BUTTONS
+   ========================================================================= */
+
+@layer components {
+  /* Refined Automotive Metric Card */
+  .automotive-card {
+    background-color: #1C1C1F;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-card);
+    padding: var(--metric-card-padding);
+  }
+
+  /* Primary button: Off-white background, 12px radius, subtle hover & press */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    background-color: #F5F5F5;
+    color: #0B0B0C;
+    border: 1px solid transparent;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-primary:hover:not(:disabled) {
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(255, 255, 255, 0.12);
+    }
+  }
+
+  .btn-primary:active:not(:disabled) {
+    background-color: #E5E5E5;
+    transform: scale(0.985);
+  }
+
+  .btn-primary:focus-visible {
+    outline: 2px solid #E5E5E5;
+    outline-offset: 2px;
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* Secondary button: Elevated surface, 12px radius, subtle white glass highlight */
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.625rem 1.125rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    background-color: #252528;
+    color: #F5F5F5;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-secondary:hover:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+  }
+
+  .btn-secondary:active:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: scale(0.985);
+  }
+
+  .btn-secondary:focus-visible {
+    outline: 2px solid #E5E5E5;
+    outline-offset: 2px;
+  }
+
+  .btn-secondary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Outlined button: 12px radius, light translucent hover */
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: #B5B5B8;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-outline:hover:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #F5F5F5;
+    }
+  }
+
+  .btn-outline:active:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.10);
+    transform: scale(0.985);
+  }
+
+  .btn-outline:focus-visible {
+    outline: 2px solid #E5E5E5;
+    outline-offset: 2px;
+  }
+
+  .btn-outline:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Icon button: 12px radius with 44px square touch area */
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    background-color: #252528;
+    color: #B5B5B8;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-icon:hover:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #F5F5F5;
+    }
+  }
+
+  .btn-icon:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+
+  .btn-icon:focus-visible {
+    outline: 2px solid #E5E5E5;
+    outline-offset: 2px;
+  }
+
+  /* Form Input: 12px radius, 44px height */
+  .automotive-input {
+    min-height: 44px;
+    width: 100%;
+    border-radius: var(--radius-md);
+    background-color: #141416;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    color: #F5F5F5;
+    transition: border-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .automotive-input::placeholder {
+    color: #858589;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .automotive-input:hover:not(:disabled):not(:focus) {
+      border-color: rgba(255, 255, 255, 0.20);
+    }
+  }
+
+  .automotive-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+  }
+
+  .automotive-input:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+/* =========================================================================
+   ACCESSIBILITY & REDUCED MOTION
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================================================
+   MINIMAL AUTOMOTIVE SCROLLBAR
+   ========================================================================= */
+
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: #0B0B0C;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #252528;
   border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #333336;
 }
-

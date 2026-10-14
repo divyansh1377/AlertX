@@ -225,10 +225,10 @@ export function useDrowsinessPipeline(): UseDrowsinessPipelineReturn {
     const w = canvas.width;
     const h = canvas.height;
 
-    // Automotive styling: Subtle slate-cyan lines and emerald landmark points
-    ctx.strokeStyle = 'rgba(6, 182, 212, 0.45)';
+    // Automotive styling: Subtle monochrome silver-white lines and points
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
     ctx.lineWidth = 1.2;
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.85)';
+    ctx.fillStyle = 'rgba(245, 245, 245, 0.85)';
 
     const drawContour = (indices: number[], closePath = true) => {
       ctx.beginPath();
@@ -245,13 +245,13 @@ export function useDrowsinessPipeline(): UseDrowsinessPipelineReturn {
     };
 
     // Draw eye rings
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.8)';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+    ctx.lineWidth = 1.4;
     drawContour(LEFT_EYE_INDICES, true);
     drawContour(RIGHT_EYE_INDICES, true);
 
     // Draw mouth ring
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.7)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
     drawContour([MOUTH_LEFT, MOUTH_TOP, MOUTH_RIGHT, MOUTH_BOTTOM], true);
 
     // Draw key telemetry points
@@ -278,10 +278,10 @@ export function useDrowsinessPipeline(): UseDrowsinessPipelineReturn {
     if (nose) {
       const nx = nose.x * w;
       const ny = nose.y * h;
-      ctx.strokeStyle = 'rgba(16, 185, 129, 0.9)';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.80)';
+      ctx.lineWidth = 1.4;
       ctx.beginPath();
-      ctx.arc(nx, ny, 8, 0, 2 * Math.PI);
+      ctx.arc(nx, ny, 7, 0, 2 * Math.PI);
       ctx.stroke();
 
       // Crosshairs
@@ -477,14 +477,14 @@ export function useDrowsinessPipeline(): UseDrowsinessPipelineReturn {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           const cx = canvas.width / 2 + simYaw * 3;
           const cy = canvas.height / 2 - simPitch * 2;
-          ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
-          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+          ctx.lineWidth = 1.2;
           ctx.strokeRect(cx - 70, cy - 90, 140, 180);
 
-          ctx.fillStyle = 'rgba(16, 185, 129, 0.8)';
+          ctx.fillStyle = 'rgba(245, 245, 245, 0.7)';
           ctx.beginPath();
-          ctx.arc(cx - 30, cy - 20, 5, 0, 2 * Math.PI);
-          ctx.arc(cx + 30, cy - 20, 5, 0, 2 * Math.PI);
+          ctx.arc(cx - 30, cy - 20, 4, 0, 2 * Math.PI);
+          ctx.arc(cx + 30, cy - 20, 4, 0, 2 * Math.PI);
           ctx.fill();
         }
       }
@@ -500,9 +500,9 @@ export function useDrowsinessPipeline(): UseDrowsinessPipelineReturn {
     async function loadMediaPipe() {
       try {
         // Load MediaPipe vision tasks from CDN dynamically
-        const visionModule = await import(
-          /* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs'
-        );
+        const cdnUrl = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs';
+        // @ts-ignore
+        const visionModule: any = await import(/* @vite-ignore */ cdnUrl);
 
         const filesetResolver = await visionModule.FilesetResolver.forVisionTasks(
           'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'

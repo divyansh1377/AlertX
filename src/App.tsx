@@ -1,5 +1,5 @@
 /**
- * DriveWatch V1 - Main Application Component
+ * AlertX / DriveWatch V1 - Main Application Component
  * Module: src/App.tsx
  *
  * Manages client-side authentication transition between
@@ -47,17 +47,17 @@ export const App: React.FC = () => {
 
   if (isInitializing) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center font-mono text-cyan-400 text-sm">
+      <div className="min-h-screen bg-[#0B0B0C] flex items-center justify-center text-[#F5F5F5] text-xs font-medium">
         <div className="flex items-center space-x-3">
-          <div className="w-3 h-3 rounded-full bg-cyan-400 animate-ping" />
-          <span>INITIALIZING DRIVEWATCH V1...</span>
+          <div className="w-2 h-2 rounded-full bg-[#F5F5F5] animate-ping" />
+          <span className="tracking-wider">INITIALIZING ALERTX...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-[#0B0B0C] text-[#F5F5F5]">
       {driver ? (
         <Dashboard driver={driver} onLogout={handleLogout} />
       ) : (
@@ -68,4 +68,3 @@ export const App: React.FC = () => {
 };
 
 export default App;
-

@@ -2,40 +2,21 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2306b6d4'><circle cx='12' cy='12' r='10'/></svg>" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23F5F5F5'><circle cx='12' cy='12' r='10'/></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DriveWatch V1 — Real-Time Driver Drowsiness Measurement Prototype</title>
+    <title>AlertX — Real-Time Driver Drowsiness Monitoring</title>
     
-    <!-- Fonts: Inter & JetBrains Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-    <!-- Tailwind CSS CDN for instant styling in standalone preview or dev -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              slate: {
-                850: '#0f172a',
-                950: '#020617',
-              }
-            },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace'],
-            }
-          }
-        }
-      }
-    </script>
+    <!-- Preload Plus Jakarta Sans Variable Font Asset -->
+    <link
+      rel="preload"
+      href="/fonts/PlusJakartaSans-VariableFont_wght.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin="anonymous"
+    />
   </head>
-  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500 selection:text-white">
+  <body class="bg-[#0B0B0C] text-[#F5F5F5] antialiased selection:bg-[#252528] selection:text-[#FFFFFF]">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

@@ -1,12 +1,13 @@
 /**
- * DriveWatch V1 - Live Webcam Monitoring Viewport
+ * AlertX / DriveWatch V1 - Live Webcam Monitoring Viewport
  * Module: src/features/viewport/WebcamViewport.tsx
  *
- * Provides a high aspect-ratio automotive camera HUD:
+ * Premium automotive camera HUD:
  * - HTML5 video streaming with mirror transformation
- * - Transparent canvas overlay for MediaPipe 468 landmark tracking
- * - Controls: Camera Pause/Resume, Mesh Overlay Toggle, Fullscreen, Reset Session
- * - Hardware corner reticles and status badges
+ * - Transparent canvas overlay for MediaPipe landmark tracking
+ * - Refined 20px rounded viewport container with 12px rounded action buttons
+ * - High-contrast monochromatic controls with 44px touch targets and smooth hover/press states
+ * - Preserves video stream stability and landmark visibility without obscuring overlays
  */
 
 import React, { useRef, useState, useEffect } from 'react';
@@ -73,25 +74,25 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col justify-between ${
-        isFullscreen ? 'h-screen p-6' : 'aspect-video min-h-[380px] sm:min-h-[440px]'
+      className={`relative w-full rounded-[20px] overflow-hidden bg-[#141416] border border-white/[0.12] shadow-xl flex flex-col justify-between ${
+        isFullscreen ? 'h-screen p-6' : 'aspect-video min-h-[360px] sm:min-h-[420px]'
       }`}
     >
-      {/* 1. Viewport Top HUD Overlay */}
-      <div className="absolute top-0 left-0 right-0 p-4 z-20 flex items-center justify-between pointer-events-none bg-gradient-to-b from-slate-950/80 via-slate-950/40 to-transparent">
+      {/* 1. Viewport Top Status Bar */}
+      <div className="absolute top-0 left-0 right-0 p-3.5 sm:p-4 z-20 flex items-center justify-between pointer-events-none bg-gradient-to-b from-[#0B0B0C]/90 via-[#0B0B0C]/40 to-transparent">
         {/* Sensor Status Pill */}
-        <div className="flex items-center space-x-2.5">
-          <div className="flex items-center space-x-2 px-2.5 py-1 rounded-md bg-slate-900/90 border border-slate-700/80 backdrop-blur-md">
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 px-3 py-1 rounded-[8px] bg-[#1C1C1F]/90 border border-white/[0.10] backdrop-blur-sm">
             <span
               className={`w-2 h-2 rounded-full ${
                 hasCameraError
-                  ? 'bg-rose-500'
+                  ? 'bg-red-500'
                   : isPaused
-                  ? 'bg-amber-400'
+                  ? 'bg-yellow-400'
                   : 'bg-emerald-400 animate-pulse'
               }`}
             />
-            <span className="text-[11px] font-mono tracking-wider font-semibold text-slate-200 uppercase">
+            <span className="text-[11px] tracking-wider text-[#F5F5F5] uppercase font-medium">
               {hasCameraError
                 ? 'Camera Error (Sim Active)'
                 : isPaused
@@ -100,13 +101,13 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
             </span>
           </div>
 
-          <div className="hidden sm:flex items-center space-x-1.5 px-2 py-1 rounded-md bg-slate-900/80 border border-slate-800 text-[11px] font-mono text-slate-400">
+          <div className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-[8px] bg-[#1C1C1F]/80 border border-white/[0.08] text-[11px] text-[#858589]">
             <span>RES:</span>
-            <span className="text-slate-200">640x480</span>
+            <span className="text-[#B5B5B8] metric-number">640x480</span>
           </div>
 
           {isUsingSimulator && (
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-800 text-cyan-300">
+            <span className="text-[10px] px-2.5 py-0.5 rounded-[8px] bg-[#252528] border border-white/[0.12] text-[#B5B5B8] font-medium">
               SYNTHETIC SIMULATOR
             </span>
           )}
@@ -115,10 +116,10 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
         {/* Real-time Tracking Badge */}
         <div className="flex items-center space-x-2">
           <div
-            className={`px-2.5 py-1 rounded-md text-[11px] font-mono font-semibold tracking-wider uppercase border backdrop-blur-md ${
+            className={`px-3 py-1 rounded-[8px] text-[11px] font-medium tracking-wide uppercase border backdrop-blur-sm ${
               metrics.faceDetected
-                ? 'bg-emerald-950/70 border-emerald-700 text-emerald-400'
-                : 'bg-amber-950/70 border-amber-700 text-amber-400 animate-pulse'
+                ? 'bg-emerald-950/60 border-emerald-500/30 text-emerald-300'
+                : 'bg-yellow-950/50 border-yellow-500/30 text-yellow-300 animate-pulse'
             }`}
           >
             {metrics.faceDetected ? '● Face Tracked' : '○ Searching Face'}
@@ -127,15 +128,15 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
       </div>
 
       {/* 2. Video Feed and Landmarks Canvas Stack */}
-      <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-slate-950">
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-[#0B0B0C]">
         {/* HTML5 Video Element (mirrored for natural driver feedback) */}
         <video
           ref={videoRef}
           playsInline
           muted
           autoPlay
-          className={`w-full h-full object-cover transform -scale-x-100 transition-opacity duration-300 ${
-            isCameraActive && !isUsingSimulator ? 'opacity-90' : 'opacity-20'
+          className={`w-full h-full object-cover transform -scale-x-100 transition-opacity duration-200 ${
+            isCameraActive && !isUsingSimulator ? 'opacity-90' : 'opacity-25'
           }`}
         />
 
@@ -150,12 +151,12 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
         {/* Simulated Camera Backdrop if camera is unavailable or in synthetic mode */}
         {isUsingSimulator && (
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0">
-            <div className="w-48 h-64 border-2 border-dashed border-cyan-500/30 rounded-full flex flex-col items-center justify-center bg-cyan-950/10 backdrop-blur-[1px]">
-              <div className="w-4 h-4 rounded-full bg-cyan-400/40 mb-3 animate-ping" />
-              <span className="text-xs font-mono text-cyan-300 tracking-wider">
+            <div className="w-44 h-60 border border-dashed border-white/[0.20] rounded-[24px] flex flex-col items-center justify-center bg-[#1C1C1F]/40 backdrop-blur-[1px]">
+              <div className="w-3 h-3 rounded-full bg-[#F5F5F5]/40 mb-3 animate-ping" />
+              <span className="text-xs text-[#B5B5B8] font-medium tracking-wider">
                 DRIVER TARGET RIG
               </span>
-              <span className="text-[10px] font-mono text-slate-400 mt-1">
+              <span className="text-[10px] text-[#858589] mt-1 metric-number">
                 Pitch: {metrics.headPose.pitch}° | Yaw: {metrics.headPose.yaw}°
               </span>
             </div>
@@ -164,10 +165,10 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
 
         {/* Pause Overlay Mask */}
         {isPaused && (
-          <div className="absolute inset-0 bg-slate-950/75 backdrop-blur-sm flex flex-col items-center justify-center z-20">
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center shadow-xl">
+          <div className="absolute inset-0 bg-[#0B0B0C]/80 backdrop-blur-sm flex flex-col items-center justify-center z-20">
+            <div className="p-5 rounded-[18px] bg-[#1C1C1F] border border-white/[0.12] text-center shadow-xl max-w-xs">
               <svg
-                className="w-8 h-8 text-amber-400 mx-auto mb-2"
+                className="w-7 h-7 text-yellow-400 mx-auto mb-2"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -179,38 +180,40 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
                   d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <div className="text-sm font-semibold text-slate-100 uppercase tracking-wider font-mono">
+              <div className="text-xs font-medium text-[#F5F5F5] uppercase tracking-wider">
                 Monitoring Stream Paused
               </div>
-              <p className="text-xs text-slate-400 mt-1 font-mono">
+              <p className="text-[11px] text-[#858589] mt-1">
                 Telemetry computation suspended
               </p>
             </div>
           </div>
         )}
 
-        {/* Hardware Frame Reticles (Samsara/Automotive Cockpit Design) */}
-        <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-slate-600 pointer-events-none z-10" />
-        <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-slate-600 pointer-events-none z-10" />
-        <div className="absolute bottom-16 left-4 w-6 h-6 border-b-2 border-l-2 border-slate-600 pointer-events-none z-10" />
-        <div className="absolute bottom-16 right-4 w-6 h-6 border-b-2 border-r-2 border-slate-600 pointer-events-none z-10" />
+        {/* Understated Reticle Corners */}
+        <div className="absolute top-4 left-4 w-5 h-5 border-t border-l border-white/20 pointer-events-none z-10" />
+        <div className="absolute top-4 right-4 w-5 h-5 border-t border-r border-white/20 pointer-events-none z-10" />
+        <div className="absolute bottom-16 left-4 w-5 h-5 border-b border-l border-white/20 pointer-events-none z-10" />
+        <div className="absolute bottom-16 right-4 w-5 h-5 border-b border-r border-white/20 pointer-events-none z-10" />
 
-        {/* Warning notification banner if camera permission issue */}
         {hasCameraError && (
-          <div className="absolute top-16 left-4 right-4 z-20 p-2.5 rounded-lg bg-rose-950/90 border border-rose-800/80 text-rose-200 text-xs font-mono flex items-center justify-between">
-            <span>⚠ Camera Notice: {cameraErrorMessage} (Active in Demo Mode)</span>
-          </div>
+          <details className="absolute top-14 left-4 right-4 z-20 p-3 rounded-[12px] bg-red-950/60 border border-red-500/30 text-red-200 text-xs cursor-pointer">
+            <summary className="flex items-center justify-between">
+              <span>⚠ Camera unavailable — using fallback simulator</span>
+            </summary>
+            <pre className="mt-2 whitespace-pre-wrap">{cameraErrorMessage}</pre>
+          </details>
         )}
       </div>
 
-      {/* 3. Viewport Bottom Controls Toolbar */}
-      <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 z-20 flex flex-wrap items-center justify-between gap-2 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent">
+      {/* 3. Bottom Controls Toolbar */}
+      <div className="absolute bottom-0 left-0 right-0 p-3.5 sm:p-4 z-20 flex flex-wrap items-center justify-between gap-2.5 bg-gradient-to-t from-[#0B0B0C] via-[#0B0B0C]/80 to-transparent">
         {/* Left Stats Indicator */}
-        <div className="flex items-center space-x-3 text-xs font-mono text-slate-400">
-          <span>FPS: <strong className="text-slate-200">{metrics.fps}</strong></span>
-          <span className="hidden sm:inline">|</span>
+        <div className="flex items-center space-x-3 text-xs text-[#858589]">
+          <span>FPS: <strong className="text-[#F5F5F5] font-medium metric-number">{metrics.fps}</strong></span>
+          <span className="hidden sm:inline text-white/10">|</span>
           <span className="hidden sm:inline">
-            Inference: <strong className="text-slate-200">{metrics.inferenceTimeMs}ms</strong>
+            Inference: <strong className="text-[#F5F5F5] font-medium metric-number">{metrics.inferenceTimeMs}ms</strong>
           </span>
         </div>
 
@@ -221,10 +224,10 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
             type="button"
             onClick={onToggleMesh}
             title="Toggle Facial Landmark Mesh"
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium font-mono border transition-all duration-150 ${
+            className={`min-h-[44px] px-4 py-2 rounded-[12px] text-xs font-medium transition-all duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#E5E5E5] active:scale-[0.98] ${
               showMeshOverlay
-                ? 'bg-cyan-950/80 border-cyan-700 text-cyan-300 hover:bg-cyan-900/80'
-                : 'bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                ? 'bg-[#252528] border border-white/[0.22] text-[#F5F5F5] hover:bg-white/[0.12]'
+                : 'bg-[#1C1C1F] border border-white/[0.10] text-[#858589] hover:text-[#F5F5F5] hover:border-white/[0.20]'
             }`}
           >
             Mesh {showMeshOverlay ? 'ON' : 'OFF'}
@@ -234,10 +237,10 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
           <button
             type="button"
             onClick={onTogglePause}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium font-mono border transition-all duration-150 flex items-center space-x-1.5 ${
+            className={`min-h-[44px] px-4 py-2 rounded-[12px] text-xs font-medium border transition-all duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#E5E5E5] active:scale-[0.98] ${
               isPaused
-                ? 'bg-emerald-950/80 border-emerald-700 text-emerald-400 hover:bg-emerald-900'
-                : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white'
+                ? 'bg-[#252528] border-yellow-500/40 text-yellow-300 hover:bg-yellow-950/40'
+                : 'bg-[#252528] border-white/[0.12] text-[#F5F5F5] hover:bg-white/[0.12] hover:border-white/[0.25]'
             }`}
           >
             <span>{isPaused ? '▶ Resume' : '⏸ Pause'}</span>
@@ -248,7 +251,7 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
             type="button"
             onClick={onResetSession}
             title="Reset Rolling Window & Metrics"
-            className="px-3 py-1.5 rounded-lg text-xs font-medium font-mono bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-150"
+            className="min-h-[44px] px-4 py-2 rounded-[12px] text-xs font-medium bg-[#1C1C1F] border border-white/[0.10] text-[#B5B5B8] hover:text-[#F5F5F5] hover:bg-white/[0.08] hover:border-white/[0.20] transition-all duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#E5E5E5] active:scale-[0.98]"
           >
             ↺ Reset
           </button>
@@ -258,7 +261,7 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
             type="button"
             onClick={toggleFullscreen}
             title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-            className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-150"
+            className="w-11 h-11 flex items-center justify-center rounded-[12px] bg-[#1C1C1F] border border-white/[0.10] text-[#B5B5B8] hover:text-[#F5F5F5] hover:bg-white/[0.08] hover:border-white/[0.20] transition-all duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#E5E5E5] active:scale-[0.98]"
             aria-label="Toggle Fullscreen"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -266,14 +269,14 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
+                  strokeWidth={1.8}
                   d="M6 18L18 6M6 6l12 12"
                 />
               ) : (
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
+                  strokeWidth={1.8}
                   d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
                 />
               )}
@@ -284,4 +287,3 @@ export const WebcamViewport: React.FC<WebcamViewportProps> = ({
     </div>
   );
 };
-
